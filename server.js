@@ -15,10 +15,9 @@ app.use(cors({
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Domain', 'X-Product-ID', 'X-Request-Timestamp']
 }));
-// Aggressive rate limiting for license verification endpoint
 const licenseVerifyLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute window
-  max: 5, // Max 5 requests per minute
+  windowMs: 60 * 1000, 
+  max: 5,
   message: 'Too many verification requests, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
@@ -32,7 +31,6 @@ const licenseVerifyLimiter = rateLimit({
     });
   },
   keyGenerator: (req) => {
-    // Rate limit by IP + License Key combination
     const licenseKey = req.headers.authorization?.replace('Bearer ', '').trim() || 'no-key';
     return `${req.ip}:${licenseKey}`;
   }
@@ -191,8 +189,6 @@ app.get('/api/license/verify', licenseVerifyLimiter, validateLicenseRequest, asy
       }
 
       const license = rows[0];
-
-      // Domain validation using constant-time comparison
       if (license.domain) {
         const normalizedLicenseDomain = normalizeDomain(license.domain);
 
@@ -206,7 +202,6 @@ app.get('/api/license/verify', licenseVerifyLimiter, validateLicenseRequest, asy
         }
       }
 
-      // No database updates needed for verification (read-only operation)
       await connection.commit();
       connection.release();
 
