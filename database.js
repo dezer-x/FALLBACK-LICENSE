@@ -1,13 +1,11 @@
 const mysql = require('mysql2/promise');
 
-// Log connection configuration (without password)
 console.log('Database Configuration:');
 console.log(`  Host: ${process.env.DB_HOST}`);
 console.log(`  User: ${process.env.DB_USER}`);
 console.log(`  Database: ${process.env.DB_NAME}`);
 console.log(`  Port: ${process.env.DB_PORT || 3306}`);
 
-// Create connection pool for better performance and connection management
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -19,15 +17,11 @@ const pool = mysql.createPool({
   queueLimit: 0,
   enableKeepAlive: true,
   keepAliveInitialDelay: 0,
-  // Security settings
-  multipleStatements: false, // Prevent SQL injection via multiple statements
-  // Connection timeout settings
+  multipleStatements: false, 
   connectTimeout: 10000,
-  // Character set
   charset: 'utf8mb4'
 });
 
-// Test connection on startup
 console.log('Attempting to connect to database...');
 pool.getConnection()
   .then(connection => {
@@ -48,5 +42,4 @@ pool.getConnection()
     process.exit(1);
   });
 
-// Export pool for queries
 module.exports = pool;
