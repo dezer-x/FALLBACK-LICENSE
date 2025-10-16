@@ -8,6 +8,47 @@ const { body, header, validationResult } = require('express-validator');
 const db = require('./database');
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+console.clear();
+
+const blue = '\x1b[34m';
+const brightBlue = '\x1b[94m';
+const white = '\x1b[37m';
+const reset = '\x1b[0m';
+const bold = '\x1b[1m';
+
+console.log(brightBlue + bold);
+console.log('╔══════════════════════════════════════════════════════════════════════╗');
+console.log('║                                                                      ║');
+console.log('║   ███████╗ █████╗ ██╗     ██╗     ██████╗  █████╗  ██████╗██╗  ██╗   ║');
+console.log('║   ██╔════╝██╔══██╗██║     ██║     ██╔══██╗██╔══██╗██╔════╝██║ ██╔╝   ║');
+console.log('║   █████╗  ███████║██║     ██║     ██████╔╝███████║██║     █████╔╝    ║');
+console.log('║   ██╔══╝  ██╔══██║██║     ██║     ██╔══██╗██╔══██║██║     ██╔═██╗    ║');
+console.log('║   ██║     ██║  ██║███████╗███████╗██████╔╝██║  ██║╚██████╗██║  ██╗   ║');
+console.log('║   ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚═════╝ ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝   ║');
+console.log('║                                                                      ║');
+console.log('║              ' + white + 'LICENSE VERIFICATION SYSTEM FOR SPARTAN' + brightBlue + '                 ║');
+console.log('║                    ' + white + 'Made by Anthony S' + brightBlue + '                                 ║');
+console.log('║                                                                      ║');
+console.log('╚══════════════════════════════════════════════════════════════════════╝');
+console.log(reset);
+
+app.use((req, res, next) => {
+  const timestamp = new Date().toISOString();
+  const method = req.method;
+  const url = req.originalUrl;
+  const ip = req.ip || req.connection.remoteAddress;
+
+  console.log(`${blue}[${white}${timestamp}${blue}]${reset} ${brightBlue}${method}${reset} ${white}${url}${reset} ${blue}from${reset} ${white}${ip}${reset}`);
+
+  const originalSend = res.send;
+  res.send = function(data) {
+    console.log(`${blue}[${white}${timestamp}${blue}]${reset} ${brightBlue}${method}${reset} ${white}${url}${reset} ${blue}→${reset} ${res.statusCode >= 400 ? '\x1b[91m' : '\x1b[92m'}${res.statusCode}${reset}`);
+    originalSend.call(this, data);
+  };
+
+  next();
+});
 app.use(helmet());
 app.use(express.json({ limit: '10kb' }));
 app.use(cors({
